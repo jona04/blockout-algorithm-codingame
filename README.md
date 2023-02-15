@@ -1,4 +1,4 @@
-# blockout-algorithm-codingame
+# Blockout Algorithm Codingame
 
 ### Neste reposito é apresentado um algoritmo protótipo para implementação e resolução do problema Blockout do site Codingame
 
@@ -19,4 +19,6 @@ Para instalar e rodar o programa em Jupyter Notebook é necessário instalação
 ### Problema na plataforma Codingame
 
 O Problema o qual é estudado nesse repositório pode ser encontrado na seguinte url: https://www.codingame.com/ide/puzzle/blockout
+
+Para testar o código na plataforma codingame, basta copiar o conteúdo do arquivo `coding_algorithm.py` diretamente no local apropriado dentro da plataforma codingame utilizando linguagem de programação Python 3. 
 
