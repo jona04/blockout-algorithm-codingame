@@ -6,7 +6,7 @@ O respositório esta organizado da seguinte maneira:
 
 - notebook_experiments.ipynb: contém código em Jupyter Notebook com métodos, classes e variáveis utilizadas durante a implementação do algoritmo;
 - coding_algorithm.py: contém o código fonte executável na plataforma Codingame para executar os testes do problema;
-- arquivo.pdf: contém detalhes da implementação, estratégias utilizadas e sugestões para implementações futuras.
+- Blockout___Codingame___Jettacargo.pdf: contém detalhes da implementação, estratégias utilizadas e sugestões para implementações futuras.
 
 ### Instalação do ambiente
 
