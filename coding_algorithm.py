@@ -9,34 +9,68 @@ class Cube:
         self.shape = shape
         
     def mount_matrix(self, type_):
+        """
+        Returns a 2d matrix from the original shape.
+        If type_ is 'number', the elemens will consistis in a index matrix. 
+        Ex: [[0, 1, 2, 24, 25, 26, 48, 49, 50],
+            [3, 4, 5, 27, 28, 29, 51, 52, 53],
+            [6, 7, 8, 30, 31, 32, 54, 55, 56],
+            [9, 10, 11, 33, 34, 35, 57, 58, 59],
+            [12, 13, 14, 36, 37, 38, 60, 61, 62],
+            [15, 16, 17, 39, 40, 41, 63, 64, 65],
+            [18, 19, 20, 42, 43, 44, 66, 67, 68],
+            [21, 22, 23, 45, 46, 47, 69, 70, 71]]
+        If type_ is 'char', the elements will consistis in a character matrix. 
+        Ex: [['#', '#', '#', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.', '.']]
+
+        :param type_: string
+
+        :return list:
+        """
         arr = list(self.shape)
         if type_ == 'number':
             arr = [i for i in range(0,self.height*self.width*self.depth)]
             
-        nn = []
+        arr_row = []
         height = pit_height
         width = pit_width
         depth=pit_depth
         first = 0
         last = height*width
         for i in range(1,depth+1):
-            nn.append(arr[first:last])
+            arr_row.append(arr[first:last])
             first = last
             last = height*width*(i+1)
 
-        n = []
+        arr_final = []
         first = 0
         last = width
         for i in range(0,height):
             m=[]
             for j in range(0,depth):
-                m.append(nn[j][first:last])
-            n.append(list(np.array(m).flatten()))
+                m.append(arr_row[j][first:last])
+            arr_final.append(list(np.array(m).flatten()))
             first = last
             last = first+width
-        return n
+        return arr_final
     
     def get_min_max_height(self, char_shape):
+        """
+        Returns the layer hight which the algorithm will try to fit the current block.
+        Ex: In a clube with shape (3,8,4), 3 is the width, 8 is the height and 4 is the depth.
+            As the height is 8, than the cube has 8 layers.
+
+        :param char_shape: list [string]
+
+        :return int:
+        """
         min_height = 0
         max_height = 0
         for i in range(1,len(char_shape)):
@@ -53,6 +87,13 @@ class Cube:
         return min_height, max_height
 
     def get_prohibted_indexes(self, obj):
+        """
+        Returns the the indexes that are already filled.
+        
+        :param obj: string (we use the char '#' to make reference to the filled spaces inside of the cube)
+
+        :return set (int):
+        """
         ind = set()
         for index, elem in enumerate(self.shape):
             if elem == obj:
@@ -62,8 +103,18 @@ class Cube:
         return ind
     
     
-    def get_all_possibilities(self,n,pi,prohibited,height_index=0):
-        layer = n[height_index]
+    def get_all_possibilities(self,number_shape,pi,prohibited,height_index=0):
+        """
+        Returns all possibilities to fit the block inside the current state of the cube.
+        
+        :param number_shape: list[int]
+        :param pi: list[ tuple ]
+        :param prohibited: list[ int ]
+        :param height_index: int
+
+        :return list [int]:
+        """
+        layer = number_shape[height_index]
         nnn = np.array(layer).reshape(self.depth,self.width)
         possibilities = []
         for ind,p in enumerate(pi):
@@ -78,6 +129,7 @@ class Cube:
                             el = nnn[i][first+j:p[0]+first+j]
                             ell = [x for ind,x in enumerate(el) if entry_shape[0][ind] == '#']
                             if any(x in prohibited for x in ell):
+                                # TODO create a mothod to convert the block to 2d matrix and check possibilities
                                 pass
                             else:
                                 possibilities.append((el,p[4],j,i))
@@ -92,6 +144,7 @@ class Cube:
                         for j in range(self.width-(p[1]-1)):
                             el = nnn[i][first+j:p[1]+first+j]
                             if any(x in prohibited for x in el):
+                                # TODO create a mothod to convert the block to 2d matrix and check possibilities
                                 pass
                             else:
                                 possibilities.append((el,p[4],j,i))
@@ -101,6 +154,16 @@ class Cube:
         return possibilities
 
     def check_bad_good_possibility(self,x,entry,entry_shape,arr_shape,height_index):
+        """
+        Check if current block satifies the condition to be classified as a good or bad possibility
+        
+        :param entry: list[ tuple ]
+        :param entry_shape: list[ string ]
+        :param arr_shape: list[ string ]
+        :param height_index: int
+
+        :return boolean:
+        """
         for i in range(entry[2]):
             for j in range(entry[0]):
                 if self.depth > 1:
@@ -118,6 +181,13 @@ class Cube:
         return True
     
     def get_improved_possibilities(self,possibilities):
+        """
+        Split all the possibilities into a set of good or bad possibilities
+        
+        :param entry: possibilities[ int ]
+
+        :return list [int], list [int]:
+        """
         good_possibilities = []
         bad_possibilities = []
         for p in possibilities:
@@ -148,8 +218,8 @@ while True:
     
     cube = Cube(pit_height,pit_width,pit_depth,pit_shape)
 
-    n = cube.mount_matrix('number')
-    p_shape = cube.mount_matrix('char')
+    number_shape = cube.mount_matrix('number')
+    char_shape = cube.mount_matrix('char')
     
     block_count = int(input())
     pi = []
@@ -168,20 +238,21 @@ while True:
     good_possibilities = [] 
     bad_possibilities = []
     min_height = 0
-    max_height= len(p_shape)
-    for i in range(1,len(p_shape)):
-        indxs_ant = [i for i,x in enumerate(p_shape[i-1]) if x == '.']
-        indxs_curr = [i for i,x in enumerate(p_shape[i]) if x == '.']
+    max_height= len(char_shape)
+    for i in range(1,len(char_shape)):
+        indxs_ant = [i for i,x in enumerate(char_shape[i-1]) if x == '.']
+        indxs_curr = [i for i,x in enumerate(char_shape[i]) if x == '.']
         common_list = set(indxs_ant).intersection(indxs_curr)
         if len(common_list) == 0:
             min_height = i+1
         
-        if len(common_list) > len(p_shape[0])/2 and i > 1:
+        if len(common_list) > len(char_shape[0])/2 and i > 1:
             max_height=i
             break
+        
     height_index_list = [i for i in range(min_height,max_height)]
     for hi in height_index_list:
-        possibilities = cube.get_all_possibilities(n,pi,prohibited,hi)
+        possibilities = cube.get_all_possibilities(number_shape,pi,prohibited,hi)
         if len(possibilities) == 0:
             continue
 
@@ -192,8 +263,10 @@ while True:
             continue
 
     if len(good_possibilities) > 0:
+        # TODO create a method to select the better option inside good possibilities
         print(good_possibilities[0][1], good_possibilities[0][2], good_possibilities[0][3])
     else:
+        # TODO create a method to select the better option inside bad possibilities
         print(bad_possibilities[0][1], bad_possibilities[0][2], bad_possibilities[0][3])
 
     count_high_index += 1
