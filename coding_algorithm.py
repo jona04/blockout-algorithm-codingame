@@ -235,10 +235,9 @@ while True:
 
     prohibited = cube.get_prohibted_indexes("#")
 
-    good_possibilities = [] 
-    bad_possibilities = []
     min_height = 0
     max_height= len(char_shape)
+    # define which layers will the checked
     for i in range(1,len(char_shape)):
         indxs_ant = [i for i,x in enumerate(char_shape[i-1]) if x == '.']
         indxs_curr = [i for i,x in enumerate(char_shape[i]) if x == '.']
@@ -249,8 +248,12 @@ while True:
         if len(common_list) > len(char_shape[0])/2 and i > 1:
             max_height=i
             break
-        
+    
+    good_possibilities = [] 
+    bad_possibilities = []
     height_index_list = [i for i in range(min_height,max_height)]
+
+    # find good possibilities in all layers of the cube
     for hi in height_index_list:
         possibilities = cube.get_all_possibilities(number_shape,pi,prohibited,hi)
         if len(possibilities) == 0:
